@@ -21,6 +21,25 @@ main_url = 'http://vnexpress.net'
 main_soup = BeautifulSoup(requests.get(main_url + '/rss').content,features="html.parser")
 session = requests.Session()
 
+class RSSParam :
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
+
+    @classmethod
+    def lastest(cls,days : int = 0):
+        end = datetime.now().astimezone()
+        start = end - timedelta(days=days)
+        return cls(
+            start_date = start,
+            end_date = end
+        )
+ 
+def to_pub_date(pub_date_str: str) -> Optional[datetime]:
+    try:
+        return datetime.strptime(pub_date_str, "%a, %d %b %Y %H:%M:%S %z")
+    except Exception:
+        return None
+
 def parse_article(soup: BeautifulSoup, html: str):
     # soup = BeautifulSoup(html, "html.parser")
 
@@ -59,21 +78,15 @@ def parse_article(soup: BeautifulSoup, html: str):
         "source" : "vnexpress",
         "url" : html,
         "title": title,
-        "published_time": published_time,
+        "published_time": to_pub_date(published_time),
         "content": content,
         "images": images,
     }
 
-def to_pub_date(pub_date_str: str) -> Optional[datetime]:
-    try:
-        return datetime.strptime(pub_date_str, "%a, %d %b %Y %H:%M:%S %z")
-    except Exception:
-        return None
 
 
 def request_rss_data(
-    start_date: Optional[datetime] = None,
-    end_date: Optional[datetime] = None,
+    param : Optional[RSSParam] = None,
 ) -> List[dict]:
     list = []
     stop = False
@@ -95,10 +108,11 @@ def request_rss_data(
                         pub_date = to_pub_date(item['pubDate'])
                         if link in parsed_links:
                             continue
-                        if start_date and pub_date and pub_date < start_date:
-                            continue
-                        if end_date and pub_date and pub_date > end_date:
-                            continue
+                        if param:
+                            if param.start_date and pub_date and pub_date < param.start_date:
+                                continue
+                            if param.end_date and pub_date and pub_date > param.end_date:
+                                continue
                         print('Parsing article: ' + link)
                         content = session.get(link).content
                         soup = BeautifulSoup(content)

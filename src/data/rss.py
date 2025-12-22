@@ -5,8 +5,8 @@ import re
 from bs4 import BeautifulSoup   # external lib
 import requests                 # external lib
 import feedparser               # external lib
-from typing import Annotated, List
-
+from datetime import datetime,timedelta
+from typing import Annotated, List,Optional
 MAX_LINKS = 3
 
 rss_re = re.compile(r'/rss/[a-z-?]+.rss', flags=re.UNICODE)
@@ -64,7 +64,17 @@ def parse_article(soup: BeautifulSoup, html: str):
         "images": images,
     }
 
-def request_rss_data() -> List[dict]:
+def to_pub_date(pub_date_str: str) -> Optional[datetime]:
+    try:
+        return datetime.strptime(pub_date_str, "%a, %d %b %Y %H:%M:%S %z")
+    except Exception:
+        return None
+
+
+def request_rss_data(
+    start_date: Optional[datetime] = None,
+    end_date: Optional[datetime] = None,
+) -> List[dict]:
     list = []
     stop = False
     index = 0
@@ -82,9 +92,13 @@ def request_rss_data() -> List[dict]:
                     try:
                         index +=1
                         link = item['link']
+                        pub_date = to_pub_date(item['pubDate'])
                         if link in parsed_links:
                             continue
-
+                        if start_date and pub_date and pub_date < start_date:
+                            continue
+                        if end_date and pub_date and pub_date > end_date:
+                            continue
                         print('Parsing article: ' + link)
                         content = session.get(link).content
                         soup = BeautifulSoup(content)
@@ -104,3 +118,9 @@ def request_rss_data() -> List[dict]:
                 break
     print('\n\nParsed a total of {0} articles.'.format(len(parsed_links)))
     return list
+
+def request_rss_data_last(days: int) :
+    end = datetime.now().astimezone()
+    start = end - timedelta(days=days)
+    return request_rss_data(start,end)
+

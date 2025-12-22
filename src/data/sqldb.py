@@ -20,6 +20,4 @@ def get_session():
         return session
     
 SessionDep = Annotated[Session, Depends(get_session_generator)]
-
-
     

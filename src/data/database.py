@@ -17,18 +17,20 @@ def db_create_article(article : Article, session : Session, update_if_exist = Fa
     session.refresh(article)
     return 
 
+
 def db_create_articles(articles : List[Article], session : Session, update_if_exist = False):
     for article in articles:
         existing_article = session.get(Article,article.source)
-        if existing_article and update_if_exist:
-            db_update_article(
-                source = article.source,
-                article = article,
-                session = session)
-            continue
-        else:
-            print(f"[ERROR] article {article.source} exist. Abort!")
-            continue 
+        if existing_article  :
+            if update_if_exist :
+                db_update_article(
+                    source = article.source,
+                    article = article,
+                    session = session)
+                continue
+            else:
+                print(f"[ERROR] article {article.source} exist. Abort!")
+                continue 
         session.add(article)
     session.commit()
     return 
@@ -61,10 +63,9 @@ def db_delete_articles(session : Session):
     session.exec(statement )
     session.commit()
 
-def db_poluting_rss(param : RSSParam,session : Session):
-    list = request_rss_data(param = param)
+def db_poluting_rss(data ,session : Session):
     articles:List[Article] = []
-    for item in list:
+    for item in data:
         articles.append(Article.from_dictionary(item))
     db_create_articles(
         articles= articles,

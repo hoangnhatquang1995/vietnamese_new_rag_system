@@ -12,6 +12,7 @@ body {
                  "Helvetica Neue", sans-serif;
     background-color: #f5f7fa;
     color: #333;
+    line-height: 1.6;
 }
 
 /* =========================
@@ -19,46 +20,33 @@ body {
 ========================= */
 nav {
     background-color: #1f2937; /* dark gray */
-    padding: 12px 24px;
+    padding: 12px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+nav .container {
     display: flex;
     gap: 20px;
+    align-items: center;
 }
 
 nav a {
     color: #e5e7eb;
     text-decoration: none;
     font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
 }
 
 nav a:hover {
     color: #ffffff;
-    text-decoration: underline;
+    background-color: #374151;
+    text-decoration: none;
 }
 
 /* =========================
    Layout
-========================= */
-hr {
-    border: none;
-    border-top: 1px solid #e5e7eb;
-    margin: 20px 0;
-}
-
-h2 {
-    margin-top: 0;
-    color: #111827;
-}
-
-h3 {
-    color: #1f2937;
-}
-
-h4 {
-    color: #374151;
-}
-
-/* =========================
-   Container
 ========================= */
 .container {
     max-width: 1100px;
@@ -66,21 +54,179 @@ h4 {
     padding: 0 16px;
 }
 
+hr {
+    border: none;
+    border-top: 1px solid #e5e7eb;
+    margin: 20px 0;
+}
+
+h1, h2, h3, h4 {
+    margin-top: 0;
+    color: #111827;
+    font-weight: 600;
+}
+
+h1 {
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+}
+
+h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: #111827;
+    border-bottom: 2px solid #2563eb;
+    padding-bottom: 0.5rem;
+}
+
+h3 {
+    color: #1f2937;
+    font-size: 1.4rem;
+    margin-bottom: 0.8rem;
+}
+
+h4 {
+    color: #374151;
+    font-size: 1.2rem;
+    margin-bottom: 0.6rem;
+}
+
+/* =========================
+   Hero Section
+========================= */
+.hero {
+    text-align: center;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.hero h1 {
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.lead {
+    font-size: 1.2rem;
+    max-width: 700px;
+    margin: 0 auto;
+    color: #e5e7eb;
+}
+
+/* =========================
+   Features
+========================= */
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 3rem;
+}
+
+.feature-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+}
+
+.feature-card h3 {
+    margin-top: 0;
+    color: #2563eb;
+}
+
+.btn {
+    display: inline-block;
+    background-color: #2563eb;
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #1d4ed8;
+    color: white;
+    text-decoration: none;
+}
+
+/* =========================
+   Instructions
+========================= */
+.instructions {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+}
+
+.instructions ol {
+    padding-left: 1.5rem;
+}
+
+.instructions li {
+    margin-bottom: 0.8rem;
+}
+
+.instructions a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.instructions a:hover {
+    text-decoration: underline;
+}
+
 /* =========================
    Buttons
 ========================= */
-button {
+.btn-primary {
     background-color: #2563eb;
     color: white;
     border: none;
-    padding: 8px 16px;
+    padding: 10px 20px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
 }
 
-button:hover {
+.btn-primary:hover {
     background-color: #1d4ed8;
+}
+
+.btn-small {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-small:hover {
+    background-color: #1d4ed8;
+    color: white;
 }
 
 button:disabled {
@@ -91,70 +237,147 @@ button:disabled {
 /* =========================
    Forms
 ========================= */
-form {
-    margin-bottom: 16px;
+.ask-form {
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
 }
 
 input[type="text"] {
-    padding: 8px 10px;
+    flex: 1;
+    padding: 12px 15px;
     border-radius: 6px;
     border: 1px solid #d1d5db;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 input[type="text"]:focus {
     outline: none;
     border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.ask-instructions {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: #eff6ff;
+    border-radius: 6px;
+    border-left: 4px solid #2563eb;
 }
 
 /* =========================
-   News List
+   News Page
 ========================= */
-ul {
+.news-controls {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+}
+
+.info-text {
+    color: #6b7280;
+    font-style: italic;
+    margin-top: 1rem;
+}
+
+.articles-count {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background-color: #f9fafb;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.articles-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.article-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+}
+
+.article-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+}
+
+.article-meta {
+    margin-bottom: 1rem;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.publish-date {
+    background-color: #f3f4f6;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.article-summary {
+    margin-bottom: 1.5rem;
+    color: #4b5563;
+}
+
+.article-link {
+    text-align: right;
+}
+
+.no-articles {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    color: #6b7280;
+}
+
+/* =========================
+   Answer Section
+========================= */
+.answer-section {
+    margin-top: 2rem;
+    padding-top: 1rem;
+}
+
+.answer-box {
+    background-color: #f0f9ff;
+    border-left: 4px solid #0ea5e9;
+    padding: 1.5rem;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.sources-section {
+    background-color: #f9fafb;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.sources-list {
     list-style: none;
     padding-left: 0;
 }
 
-li {
+.sources-list li {
     background: white;
-    margin-bottom: 16px;
-    padding: 16px;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
-
-li b {
-    font-size: 16px;
-    color: #111827;
-}
-
-li small {
-    color: #6b7280;
-}
-
-li p {
-    margin-top: 8px;
-    line-height: 1.5;
-}
-
-/* =========================
-   Answer Box
-========================= */
-.answer-box {
-    background-color: #ecfeff;
-    border-left: 4px solid #06b6d4;
-    padding: 16px;
+    margin-bottom: 10px;
+    padding: 12px;
     border-radius: 6px;
-}
-
-.sources {
-    margin-top: 12px;
-    font-size: 14px;
-}
-
-.sources li {
-    background: #f9fafb;
-    box-shadow: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border-left: 3px solid #2563eb;
 }
 
 /* =========================
@@ -165,4 +388,6 @@ footer {
     padding: 24px;
     color: #9ca3af;
     font-size: 13px;
+    margin-top: 3rem;
+    border-top: 1px solid #e5e7eb;
 }

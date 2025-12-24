@@ -1,5 +1,5 @@
-from rag import read_doc,chat
-from data.sqldb import create_db_and_tables
+# from rag import read_doc,chat
+from data.sqldb import create_db_and_tables,get_session
 import uvicorn
 import os
 from api.app import app

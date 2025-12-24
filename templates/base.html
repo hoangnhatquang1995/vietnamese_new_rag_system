@@ -3,14 +3,18 @@
 <head>
     <title>RSS RAG System</title>
     <link rel="stylesheet" href="/statics/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
     <nav>
-        <a href="/">Home</a>
-        <a href="/news">Tin tức</a>
-        <!-- <a href="/rag">Hỏi Tin tức</a> -->
+        <div class="container">
+            <a href="/">Home</a>
+            <a href="/news">Tin tức</a>
+            <a href="/rag">Hỏi Tin tức</a>
+        </div>
     </nav>
-    <hr>
-    {% block content %}{% endblock %}
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
 </body>
 </html>

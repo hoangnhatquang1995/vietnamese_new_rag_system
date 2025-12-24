@@ -1,5 +1,30 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>News RAG System</h2>
-<p>Fetch RSS → Ask question using RAG</p>
+<div class="hero">
+    <h1>📰 News RAG System</h1>
+    <p class="lead">Hệ thống tìm kiếm và hỏi đáp thông tin tin tức sử dụng công nghệ RAG</p>
+</div>
+
+<div class="features">
+    <div class="feature-card">
+        <h3>🔍 Tìm kiếm tin tức</h3>
+        <p>Thu thập tin tức mới nhất từ các nguồn RSS uy tín</p>
+        <a href="/news" class="btn">Xem tin tức</a>
+    </div>
+    
+    <div class="feature-card">
+        <h3>💬 Hỏi đáp thông minh</h3>
+        <p>Đặt câu hỏi về tin tức và nhận câu trả lời chính xác</p>
+        <a href="/rag" class="btn">Hỏi ngay</a>
+    </div>
+</div>
+
+<div class="instructions">
+    <h2>Hướng dẫn sử dụng</h2>
+    <ol>
+        <li>Truy cập trang <a href="/news">Tin tức</a> để thu thập dữ liệu mới</li>
+        <li>Sau đó, sử dụng trang <a href="/rag">Hỏi Tin tức</a> để đặt câu hỏi</li>
+        <li>Hệ thống sẽ trả lời dựa trên thông tin tin tức đã thu thập</li>
+    </ol>
+</div>
 {% endblock %}

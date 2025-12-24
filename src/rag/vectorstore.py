@@ -50,7 +50,6 @@ class VectorStoreManager:
         docs = documents.to_list_documents(datas)
         chunks = documents.chunking_document(docs)
         if self.vectorstore is None:
-            
             self.build(embedder,chunks)
         else:
             self.add(docs)

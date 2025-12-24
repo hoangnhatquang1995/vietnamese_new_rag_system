@@ -16,7 +16,7 @@ templates = Jinja2Templates(directory="templates")
 @router.get("/")
 def news_page(request : Request, session: SessionDep):
     articles = session.exec(select(Article)).all()
-
+    print(f"articles = {len(articles)}")
     return templates.TemplateResponse(
         "news.html",
         {"request": request, "articles": articles}
@@ -28,10 +28,11 @@ def fetch_news(session: SessionDep):
         catalogs=["tin-moi-nhat"],
         limit_article=50
     )
-    articles = db_poluting_rss(param, session)
-    list = [ article.model_dump() for article in articles ]
-    read_doc(list)
+    datas = request_rss_data(param = param)
+    articles = db_poluting_rss(datas, session)
+    read_doc(datas)
     return {
         "count": len(articles),
-        "list" : list
+        "list" : articles
     }
+   

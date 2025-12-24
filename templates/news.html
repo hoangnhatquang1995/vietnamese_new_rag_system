@@ -1,20 +1,38 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>📰 Get News</h2>
+<h2>📰 Tin tức mới nhất</h2>
 
-<form action="/news/fetch" method="post">
-    <button type="submit">Fetch RSS</button>
-</form>
+<div class="news-controls">
+    <form action="/news/fetch" method="post">
+        <button type="submit" class="btn-primary">📥 Fetch RSS Mới</button>
+    </form>
+    <p class="info-text">Hệ thống sẽ thu thập tin tức mới nhất từ các nguồn RSS để bạn có thể hỏi đáp thông tin.</p>
+</div>
 
 <hr>
 
-<ul>
-{% for a in articles %}
-    <li>
-        <b>{{ a.title }}</b><br>
-        <small>{{ a.published_time }}</small>
-        <p>{{ a.content[:300] }}...</p>
-    </li>
-{% endfor %}
-</ul>
+{% if articles %}
+    <div class="articles-count">
+        <p>Tổng số bài viết: <strong>{{ articles|length }}</strong></p>
+    </div>
+    
+    <div class="articles-list">
+    {% for a in articles %}
+        <div class="article-card">
+            <h3>{{ a.title }}</h3>
+            <div class="article-meta">
+                <span class="publish-date">{{ a.published_time }}</span>
+            </div>
+            <p class="article-summary">{{ a.content[:300] }}...</p>
+            <div class="article-link">
+                <a href="{{ a.source }}" target="_blank" class="btn-small">📖 Đọc thêm</a>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+{% else %}
+    <div class="no-articles">
+        <p>Chưa có bài viết nào. Hãy nhấn vào nút "Fetch RSS Mới" để thu thập tin tức.</p>
+    </div>
+{% endif %}
 {% endblock %}

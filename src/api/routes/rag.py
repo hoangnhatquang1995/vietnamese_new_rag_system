@@ -21,13 +21,13 @@ def ask_news(
     question: str = Form(...)
 ):
     result = chat(question)
-
+    print(f"Result = {result}")
     return templates.TemplateResponse(
         "ask.html",
         {
             "request": request,
             "question": question,
-            "answer": result["answer"],
-            "sources": result.get("sources", [])
+            "answer" : result,
+            "sources": "vnexpress"
         }
     )

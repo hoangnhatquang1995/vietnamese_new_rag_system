@@ -4,9 +4,9 @@ from dotenv import load_dotenv
 
 load_dotenv(".env")
 
-HUGGINGFACE_MODEL_NAME = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+EMBEDDING_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 SENTENCE_TRANFORMER_MODEL = "all-MiniLM-L6-v2"
-OPENAI_MODEL = "gemini-2.5-flash"
+LLM_MODEL = "deepseek-r1"
 PERSIST_DIR = "vectorstore"
 CHUNK_SIZE = 500
 CHUNK_OVERLAPPED = 200

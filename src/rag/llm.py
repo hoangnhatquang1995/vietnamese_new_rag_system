@@ -26,6 +26,7 @@ def get_llm(llm : LLM.Cloud | LLM.Local , model : str,temperature: float = 0.3) 
             temperature= temperature
         )
     elif llm == LLM.Local.OLLAMA :
+        print("GET OLLAMA")
         return ChatOllama(
             model= model,
             temperature= temperature

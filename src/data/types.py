@@ -6,13 +6,15 @@ class Article(SQLModel,table = True):
     title: Optional[str]            =   Field(index = True)
     published_time: Optional[str]   =   Field()
     content: Optional[str]          =   Field()
-    
+    news: Optional[str]             =   Field()
+
     @classmethod
     def from_dictionary(cls,dic : dict) :
         return cls(
             source = dic["source"],
             title = dic["title"],
             published_time = dic["published_time"],
-            content = dic["formatted_content"]
+            content = dic["content"],
+            news = dic["news"]
         )
     

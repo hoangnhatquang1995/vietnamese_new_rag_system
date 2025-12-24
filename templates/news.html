@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>📰 Get News</h2>
+
+<form action="/news/fetch" method="post">
+    <button type="submit">Fetch RSS</button>
+</form>
+
+<hr>
+
+<ul>
+{% for a in articles %}
+    <li>
+        <b>{{ a.title }}</b><br>
+        <small>{{ a.published_time }}</small>
+        <p>{{ a.content[:300] }}...</p>
+    </li>
+{% endfor %}
+</ul>
+{% endblock %}

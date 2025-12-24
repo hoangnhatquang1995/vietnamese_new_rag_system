@@ -5,6 +5,9 @@ from langchain_core.vectorstores import VectorStoreRetriever
 from langchain_core.documents import Document
 from langchain_community.vectorstores import FAISS
 from langchain_community.docstore import InMemoryDocstore
+
+from . import documents
+
 import faiss
 import hashlib
 
@@ -42,7 +45,17 @@ class VectorStoreManager:
         if not os.path.exists(self.persist_path):
             self.save()
         return self.vectorstore
-
+    
+    def read(self,datas : List[dict],embedder = None):
+        docs = documents.to_list_documents(datas)
+        chunks = documents.chunking_document(docs)
+        if self.vectorstore is None:
+            
+            self.build(embedder,chunks)
+        else:
+            self.add(docs)
+             
+        
     def save(self):
         print("!SAVING VECTORSTORE TO LOCAL!")
         if self.vectorstore is None:
@@ -54,8 +67,10 @@ class VectorStoreManager:
             self.embedder = embedder
         if not os.path.exists(self.persist_path):
             if build_if_not_existed:
+                print("Build instead of Load Local")
                 return self.build()
             return None
+        print("Load from Local")
         self.vectorstore = FAISS.load_local(
             self.persist_path,
             embeddings=self.embedder,
@@ -106,71 +121,3 @@ class VectorStoreManager:
             return None 
         return self.vectorstore.as_retriever(search_kwargs={"k": 10})
     
-    
-
-
-# def build_from_document(documents , embedder_model) -> FAISS:
-#     # vectorstore = FAISS.from_documents( 
-#     #     documents= documents,
-#     #     embedding= embedder_model
-#     # )
-#     # return vectorstore
-
-#     dim = len(embedder_model.embed_query(" "))
-#     index = faiss.IndexFlatL2(dim)
-#     vector_store = FAISS(
-#         embedding_function=embedder_model,
-#         index=index,
-#         docstore=InMemoryDocstore(),
-#         index_to_docstore_id={}
-#     )
-#     vector_store.add_documents(documents)
-#     return vector_store
-
-# def save_vectorstore(vectorstore : FAISS):
-#     vectorstore.save_local(VECTORESTORE_PATH)
-
-# def load_vectorstore(embedder_model):
-#     vectorstore = FAISS.load_local(
-#         VECTORESTORE_PATH,
-#         embeddings= embedder_model,
-#         allow_dangerous_deserialization= True
-#     )
-#     return vectorstore
-
-# def add_documents(
-#     vectorstore: FAISS,
-#     documents: List[Document],
-#     update_if_exists: bool = False
-# ):
-
-#     docs = []
-#     ids = []
-
-#     for doc in documents:
-#         doc_id = document_id(doc)
-
-#         if doc_id in vectorstore.docstore._dict:
-#             if update_if_exists:
-#                 vectorstore.delete([doc_id])
-#             else:
-#                 continue
-
-#         docs.append(doc)
-#         ids.append(doc_id)
-
-#     if docs:
-#         vectorstore.add_documents(docs, ids=ids)
-
-
-# def search_document_from_vectorstore(search : str, vectorstore : FAISS ,filter : dict = {}):
-#     retriever = vectorstore.as_retriever(
-#         search_kwargs={
-#             "k": 10,
-#             "filter" : filter
-#         },
-#         search_type="similarity",
-#     )
-#     docs = retriever.invoke(search)
-#     return docs
-

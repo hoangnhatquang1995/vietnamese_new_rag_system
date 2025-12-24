@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Hỏi tin tức</h2>
+
+<form method="post" action="/rag/ask">
+    <input type="text" name="question" placeholder="Nhập câu hỏi..." style="width:70%" required>
+    <button type="submit">Ask</button>
+</form>
+
+{% if answer %}
+<hr>
+<h3>Answer</h3>
+<p>{{ answer }}</p>
+
+{% if sources %}
+<h4>Sources</h4>
+<ul>
+{% for s in sources %}
+    <li>{{ s }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+{% endif %}
+
+{% endblock %}

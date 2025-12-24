@@ -2,7 +2,7 @@ from rag.llm import *
 from pydantic import BaseModel,Field
 from langchain_core.prompts import ChatPromptTemplate
 from typing import Literal
-from settings.settings import OPENAI_MODEL
+from settings.settings import LLM_MODEL
 
 class GradeDocuments(BaseModel):
     """Binary score for relevance check on retrieved documents."""
@@ -33,7 +33,7 @@ grade_prompt = ChatPromptTemplate.from_messages(
 # llm = get_llm(LLM.Local.OLLAMA,"deepseek-r1") => Lỗi do Local Model không nên dùng để Grade with structured
 # structured_llm_grader = llm.with_structured_output(GradeDocuments)
 
-llm = get_llm(LLM.Cloud.GOOGLE_CHAT,OPENAI_MODEL) # Sẽ dùng trong trường hợp đủ token
+llm = get_llm(LLM.Cloud.GOOGLE_CHAT,"gemini-2.5-flash") # Sẽ dùng trong trường hợp đủ token
 structured_llm_grader = llm.with_structured_output(GradeDocuments)
 retrieval_grader = grade_prompt | structured_llm_grader
 

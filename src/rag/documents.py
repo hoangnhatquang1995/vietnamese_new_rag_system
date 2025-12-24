@@ -10,8 +10,7 @@ def to_document(dict : dict):
             "source": dict["source"],
             "title": dict["title"],
             "published_time": dict["published_time"],
-            "images": dict["images"],
-            "news": "vnexpress",
+            "news": dict["news"],
         }
     )
 

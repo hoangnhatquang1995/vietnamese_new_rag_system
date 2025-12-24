@@ -1,6 +1,6 @@
 from . import sqldb
 from .rss import RSSParam,request_rss_data
-from sqlmodel import Session,select
+from sqlmodel import Session,select,delete
 from typing import List
 from .types import Article
 
@@ -27,8 +27,8 @@ def db_create_articles(articles : List[Article], session : Session, update_if_ex
                 session = session)
             continue
         else:
-            print(f"[ERROR] article {article} exist. Abort!")
-            return 
+            print(f"[ERROR] article {article.source} exist. Abort!")
+            continue 
         session.add(article)
     session.commit()
     return 
@@ -56,13 +56,18 @@ def db_update_article(source : str, article : Article, session : Session):
 
     return existing_article
 
+def db_delete_articles(session : Session):
+    statement  = delete(Article)
+    session.exec(statement )
+    session.commit()
+
 def db_poluting_rss(param : RSSParam,session : Session):
     list = request_rss_data(param = param)
     articles:List[Article] = []
     for item in list:
         articles.append(Article.from_dictionary(item))
     db_create_articles(
-        article= articles,
+        articles= articles,
         session = session,
         update_if_exist= True
     )

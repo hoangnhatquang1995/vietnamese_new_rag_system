@@ -78,7 +78,7 @@ def parse_article(soup: BeautifulSoup, html: str):
         "title": title,
         "published_time": published_time,
         "content": content,
-        "images": images,
+        "news" : "vnexpress"
     }
 
 

@@ -4,7 +4,7 @@
 
 <div class="news-controls">
     <form action="/news/fetch" method="post">
-        <button type="submit" class="btn-primary">📥 Fetch RSS Mới</button>
+        <button type="submit" class="btn-primary">Fetch RSS Mới</button>
     </form>
     <p class="info-text">Hệ thống sẽ thu thập tin tức mới nhất từ các nguồn RSS để bạn có thể hỏi đáp thông tin.</p>
 </div>
@@ -25,7 +25,7 @@
             </div>
             <p class="article-summary">{{ a.content[:300] }}...</p>
             <div class="article-link">
-                <a href="{{ a.source }}" target="_blank" class="btn-small">📖 Đọc thêm</a>
+                <a href="{{ a.source }}" target="_blank" class="btn-small">Đọc thêm</a>
             </div>
         </div>
     {% endfor %}

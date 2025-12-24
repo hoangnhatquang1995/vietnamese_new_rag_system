@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>💬 Hỏi đáp về tin tức</h2>
+<h2>Hỏi đáp về tin tức</h2>
 
 <div class="ask-instructions">
     <p>Đặt câu hỏi về các tin tức đã được thu thập để nhận câu trả lời thông minh từ hệ thống.</p>
@@ -9,20 +9,20 @@
 <form method="post" action="/rag/ask" class="ask-form">
     <div class="form-group">
         <input type="text" name="question" placeholder="Ví dụ: Tin tức mới nhất về công nghệ?" required>
-        <button type="submit" class="btn-primary">🔍 Ask</button>
+        <button type="submit" class="btn-primary">Ask</button>
     </div>
 </form>
 
 {% if answer %}
 <div class="answer-section">
-    <h3>📝 Câu trả lời</h3>
+    <h3>Câu trả lời</h3>
     <div class="answer-box">
         <p>{{ answer }}</p>
     </div>
 
     {% if sources %}
     <div class="sources-section">
-        <h4>📄 Nguồn tham khảo</h4>
+        <h4>Nguồn tham khảo</h4>
         <ul class="sources-list">
         {% for s in sources %}
             <li>{{ s }}</li>

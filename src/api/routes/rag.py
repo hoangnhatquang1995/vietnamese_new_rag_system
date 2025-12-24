@@ -28,6 +28,6 @@ def ask_news(
             "request": request,
             "question": question,
             "answer" : result,
-            "sources": "vnexpress"
+            "sources": ["vnexpress"]
         }
     )

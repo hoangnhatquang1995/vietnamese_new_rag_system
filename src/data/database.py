@@ -5,10 +5,10 @@ from typing import List
 from .types import Article
 
 def db_create_article(article : Article, session : Session, update_if_exist = False):
-    existing_article = session.get(Article,article.url)
+    existing_article = session.get(Article,article.source)
     if existing_article and update_if_exist:
         db_update_article(
-            url = article.url,
+            source = article.source,
             article = article,
             session = session)
         return 
@@ -19,10 +19,10 @@ def db_create_article(article : Article, session : Session, update_if_exist = Fa
 
 def db_create_articles(articles : List[Article], session : Session, update_if_exist = False):
     for article in articles:
-        existing_article = session.get(Article,article.url)
+        existing_article = session.get(Article,article.source)
         if existing_article and update_if_exist:
             db_update_article(
-                url = article.url,
+                source = article.source,
                 article = article,
                 session = session)
             continue
@@ -33,12 +33,12 @@ def db_create_articles(articles : List[Article], session : Session, update_if_ex
     session.commit()
     return 
 
-def db_update_article(url : str, article : Article, session : Session):
-    # statement = select(Article).where(Article.url == url)
-    existing_article = session.get(Article,url)
+def db_update_article(source : str, article : Article, session : Session):
+    # statement = select(Article).where(Article.source == source)
+    existing_article = session.get(Article,source)
 
     if not existing_article:
-        print(f"Article {url} not found")
+        print(f"Article {source} not found")
         return None
 
     if article.title is not None:

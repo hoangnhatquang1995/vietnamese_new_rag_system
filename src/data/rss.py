@@ -15,36 +15,28 @@ parsed_rss = []
 
 stop = False
 
-main_url = 'http://vnexpress.net'
-main_soup = BeautifulSoup(requests.get(main_url + '/rss').content,features="html.parser")
+main_source = 'http://vnexpress.net'
+main_soup = BeautifulSoup(requests.get(main_source + '/rss').content,features="html.parser")
 session = requests.Session()
 
 class RSSParam :
-    start_date: Optional[datetime] = None
-    end_date: Optional[datetime] = None
     catalogs : Optional[List[str]] = None
     limit_article : Optional[List[int]] = 200
 
-    def __init__(self, start_date = None ,end_date = None,catalogs= None,limit_article = 200):
-        self.start_date = start_date
-        self.end_date = end_date
+    def __init__(self, catalogs= None,limit_article = 200):
         self.catalogs = catalogs
         self.limit_article = limit_article
         
-    @classmethod
-    def lastest(cls,days : int = 0):
-        end = datetime.now().astimezone()
-        start = end - timedelta(days=days)
-        return cls(
-            start_date = start,
-            end_date = end
-        )
  
 def to_pub_date(pub_date_str: str) -> Optional[datetime]:
     try:
         return datetime.strptime(pub_date_str, "%a, %d %b %Y %H:%M:%S %z")
     except Exception:
         return None
+
+def remove_tab_space(str : str) :
+    return str
+    # return str.replace('\t', ' ')  # Replace tabs with spaces
 
 def parse_article(soup: BeautifulSoup, html: str):
     # soup = BeautifulSoup(html, "html.parser")
@@ -63,7 +55,8 @@ def parse_article(soup: BeautifulSoup, html: str):
             text = p.get_text(" ", strip=True)
             if text:
                 paragraphs.append(text)
-    content = "\n\n".join(paragraphs)
+    content = ". ".join(paragraphs)
+    content = remove_tab_space(content)
 
     # Images
     images = []
@@ -76,12 +69,12 @@ def parse_article(soup: BeautifulSoup, html: str):
 
     og = soup.select_one('meta[property="og:image"]')
     if og:
-        og_url = og.get("content")
-        if og_url:
-            images.insert(0, og_url)
+        og_source = og.get("content")
+        if og_source:
+            images.insert(0, og_source)
 
     return {
-        "url" : html,
+        "source" : html,
         "title": title,
         "published_time": published_time,
         "content": content,
@@ -101,7 +94,7 @@ def request_rss_data(param: Optional[RSSParam] = None):
             if param is not None and catalog not in param.catalogs:
                 continue
             print(f"[INFOR] Request get Catalog {catalog}")
-            rss_link = main_url + a['href']
+            rss_link = main_source + a['href']
 
             if rss_link not in parsed_rss:
                 print('Parsing RSS: ' + rss_link)
@@ -119,6 +112,8 @@ def request_rss_data(param: Optional[RSSParam] = None):
                         content = session.get(link).content
                         soup = BeautifulSoup(content)
                         article = parse_article(soup = soup, html= link)
+                        if len(article["content"]) <= 50:
+                            continue
                         list.append(article)
                         parsed_links.append(link)
                         if param is not None and param.limit_article is not None and len(parsed_links) >= param.limit_article:
@@ -136,9 +131,3 @@ def request_rss_data(param: Optional[RSSParam] = None):
                 break
     print('\n\nParsed a total of {0} articles.'.format(len(parsed_links)))
     return list
-
-def request_rss_data_last(days: int) :
-    end = datetime.now().astimezone()
-    start = end - timedelta(days=days)
-    return request_rss_data(start,end)
-

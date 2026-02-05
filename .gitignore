@@ -10,3 +10,4 @@ database.db
 src/api/__pycache__
 src/api/routes/__pycache__
 rss_scrap.txt
+docs/

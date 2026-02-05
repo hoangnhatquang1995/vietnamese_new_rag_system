@@ -1,14 +1,18 @@
-from typing import Annotated,Optional
-from sqlmodel import Session,SQLModel,create_engine
+from typing import Annotated, Optional
+from pathlib import Path
+
+from sqlmodel import Session, SQLModel, create_engine
 from fastapi import Depends
 
-sqlite_filename = "database.db"
-sqlite_url = f"sqlite:///{sqlite_filename}"
+BASE_DIR = Path(__file__).resolve().parents[2]
+SQLITE_PATH = (BASE_DIR / "database.db").resolve()
+sqlite_url = f"sqlite:///{SQLITE_PATH.as_posix()}"
 
 connect_args = {"check_same_thread": False}
 engine = create_engine(sqlite_url, connect_args=connect_args)
 
 def create_db_and_tables():
+    SQLITE_PATH.parent.mkdir(parents=True, exist_ok=True)
     SQLModel.metadata.create_all(engine)
 
 def get_session_generator():

@@ -2,7 +2,7 @@ from langchain_classic.chains import create_retrieval_chain
 from langchain_classic.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
 
-from . import vectorstore
+from data import vectorstore
 
 system_prompt = (
         """

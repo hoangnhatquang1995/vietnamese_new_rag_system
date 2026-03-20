@@ -4,7 +4,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.documents import Document
 from typing import Literal,List 
 
-from rag.documents import format_docs
+from data.documents import format_docs
 class GradeHallucinations(BaseModel):
     """Binary score for hallucination present in 'generation' answer."""
 

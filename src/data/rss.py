@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup   # external lib
 import requests                 # external lib
 import feedparser               # external lib
 from datetime import datetime,timedelta
-from typing import Annotated, List,Optional
+from typing import Annotated, List,Optional,TypedDict
 
 rss_re = re.compile(r'/rss/[a-z-?]+.rss', flags=re.UNICODE)
 word_re = re.compile('(\w+)', flags=re.UNICODE)  # Chưa chính xác.
@@ -19,15 +19,10 @@ main_source = 'http://vnexpress.net'
 main_soup = BeautifulSoup(requests.get(main_source + '/rss').content,features="html.parser")
 session = requests.Session()
 
-class RSSParam :
-    catalogs : Optional[List[str]] = None
-    limit_article : Optional[List[int]] = 200
+class RSSParam (TypedDict):
+    catalogs : Optional[List[str]]
+    limit_article : Optional[int]        
 
-    def __init__(self, catalogs= None,limit_article = 200):
-        self.catalogs = catalogs
-        self.limit_article = limit_article
-        
- 
 def to_pub_date(pub_date_str: str) -> Optional[datetime]:
     try:
         return datetime.strptime(pub_date_str, "%a, %d %b %Y %H:%M:%S %z")

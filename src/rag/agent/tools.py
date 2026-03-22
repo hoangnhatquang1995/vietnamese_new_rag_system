@@ -19,3 +19,6 @@ def fetch_news(catalogs: str, limit_article: int = 200):
     articles = request_rss_data(param)
     return articles
 
+tools = {
+    "fetch_news": fetch_news
+}

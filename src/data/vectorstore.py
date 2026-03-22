@@ -96,19 +96,7 @@ class VectorStoreManager:
             self.add(documents)
 
         self.save()
-        return self.vectorstore
-    
-    # def read(self, datas: List[dict], embedder=None):
-    #     docs = []
-    #     for data in datas:
-    #         doc = self.dict_to_document(data)
-    #         docs.append(doc)
-    #     chunks = documents.chunking_document(docs)
-    #     if self.vectorstore is None:
-    #         self.build(embedder, chunks)
-    #     else:
-    #         self.add(chunks)
-             
+        return self.vectorstore             
         
     def save(self) -> None:
         if self.vectorstore is None:

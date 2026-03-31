@@ -25,8 +25,8 @@ def read_doc(datas : List[dict]):
     global db
     db.add(datas)
 
-def chat(message : str) :
+def chat(message : str , history : List[tuple] = []) :
     print("Chating")
     global rag_chain
-    answer= rag_chain.invoke({"input": message})
+    answer = rag_chain.invoke({"input": message})
     return answer["answer"]

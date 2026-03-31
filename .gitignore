@@ -1,5 +1,4 @@
 .venv
-.env
 src/__pycache__
 src/data/__pycache__
 src/settings/__pycache__

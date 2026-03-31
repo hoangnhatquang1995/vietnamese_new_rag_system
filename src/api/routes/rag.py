@@ -20,7 +20,10 @@ class AskJsonRequest(BaseModel):
 def ask_page(request: Request):
     return templates.TemplateResponse(
         "ask.html",
-        {"request": request}
+        {
+            "request": request,
+            "gradio_chatbot_url": "/gradio_chatbot_url",
+        }
     )
 
 
@@ -35,6 +38,7 @@ def ask_news(
         "ask.html",
         {
             "request": request,
+
             "question": question,
             "answer" : result,
             "sources": ["vnexpress"]

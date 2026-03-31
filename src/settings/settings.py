@@ -10,3 +10,6 @@ LLM_MODEL = "deepseek-r1"
 PERSIST_DIR = "vectorstore"
 CHUNK_SIZE = 500
 CHUNK_OVERLAPPED = 200
+
+QDRANT_HOST = os.getenv("QDRANT_HOST", "localhost")
+QDRANT_PORT = int(os.getenv("QDRANT_PORT", 6333))

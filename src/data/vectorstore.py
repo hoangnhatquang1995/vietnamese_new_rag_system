@@ -8,13 +8,21 @@ from langchain_core.documents import Document
 from langchain_community.vectorstores import FAISS
 from langchain_community.docstore import InMemoryDocstore
 from langchain_chroma import Chroma
+from qdrant_client import QdrantClient
+from qdrant_client.http import models as rest
 from . import documents
 
+import enum
 import faiss
 import hashlib
 
 
 VECTORESTORE_PATH = "stored"
+
+class VectorStore(enum.Enum):
+    CHROMA = "chroma"
+    QDRANT = "qdrant"
+
 
 def document_id(doc : Document) -> str:
     content = doc.page_content.strip()
@@ -30,6 +38,7 @@ class VectorStoreManager:
     embedder: Any = None
     persist_path: str = VECTORESTORE_PATH
     vectorstore: Optional[Chroma] = None
+    vectorstore_type: VectorStore = VectorStore.CHROMA
 
     @staticmethod
     def document_id(doc : Document) -> str:
@@ -73,10 +82,12 @@ class VectorStoreManager:
             **doc.metadata
         }
 
-    def __init__(self, embedder=None, name="vietnamese_news", persist_path: str = VECTORESTORE_PATH):
+    def __init__(self, embedder=None, name="vietnamese_news", persist_path: str = VECTORESTORE_PATH, type : VectorStore = VectorStore.CHROMA):
         self.embedder = embedder
         self.persist_path = persist_path
         self.name = name
+        self.vectorstore_type = type
+
 
     def build(self, embedder=None, documents: Optional[List[Document]] = None):
         if embedder != None :

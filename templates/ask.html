@@ -6,6 +6,14 @@
     <p>Đặt câu hỏi về các tin tức đã được thu thập để nhận câu trả lời thông minh từ hệ thống.</p>
 </div>
 
+<iframe 
+    src="{{ gradio_chatbot_url }}" 
+    width="100%" 
+    height="600px"
+    frameborder="0">
+</iframe>
+
+<!-- 
 <form method="post" action="/rag/ask" class="ask-form">
     <div class="form-group">
         <input type="text" name="question" placeholder="Ví dụ: Tin tức mới nhất về công nghệ?" required>
@@ -31,6 +39,6 @@
     </div>
     {% endif %}
 </div>
-{% endif %}
+{% endif %} -->
 
 {% endblock %}

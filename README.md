@@ -1,145 +1,135 @@
 # Vietnamese News RAG System
 
-Hệ thống hỏi đáp thông minh về tin tức Việt Nam sử dụng công nghệ Retrieval-Augmented Generation (RAG).
+Hệ thống hỏi đáp tiếng Việt cho tin tức VnExpress theo hướng **RAG (Retrieval-Augmented Generation)**.
 
-## 📋 Mô tả dự án
+> Cập nhật README theo code hiện tại: **2026-03-31**
 
-Vietnamese News RAG System là một ứng dụng web cho phép người dùng:
-- Thu thập tin tức mới nhất từ các nguồn RSS uy tín
-- Đặt câu hỏi về các tin tức đã thu thập và nhận câu trả lời thông minh
-- Tìm kiếm thông tin chính xác dựa trên dữ liệu tin tức thực tế
+## 📋 Mô tả ngắn
 
-Hệ thống sử dụng công nghệ RAG (Retrieval-Augmented Generation) để đảm bảo câu trả lời chính xác và đáng tin cậy, chỉ dựa trên thông tin từ các bài báo đã thu thập.
+Ứng dụng web cho phép:
+- Fetch tin tức qua RSS (hiện tại: VnExpress) → lưu vào SQLite
+- Ingest nội dung bài viết vào **vector store** để truy xuất theo ngữ nghĩa
+- Hỏi đáp: hệ thống retrieve ngữ cảnh liên quan và yêu cầu LLM trả lời **chỉ dựa trên ngữ cảnh**
 
-## 🏗️ Kiến trúc hệ thống
+## 🚀 Tính năng & endpoint
 
+**Web UI (Jinja2):**
+- `GET /` Trang chủ
+- `GET /news/` Danh sách bài báo trong SQLite
+- `POST /news/fetch` Fetch RSS (mặc định 50 bài `tin-moi-nhat`) + ingest vào vector store
+- `GET /rag/` Form hỏi đáp
+- `POST /rag/ask` Hỏi đáp qua RAG chain (render HTML)
+
+**Chat UI (Gradio):**
+- `GET /gradio_chatbot_url` Giao diện chat Gradio (được mount trong FastAPI)
+
+**JSON API:**
+- `POST /rag/ask_json` Trả JSON
+  - `use_agent=false`: chạy RAG chain trực tiếp (ổn định)
+  - `use_agent=true`: hiện là **scaffold** (chưa implement đầy đủ, trả về chuỗi TODO)
+
+Payload mẫu:
+```json
+{
+  "question": "Tóm tắt các tin nổi bật gần đây",
+  "use_agent": false,
+  "include_trace": false
+}
 ```
-vietnamese_new_rag_system/
-├── src/
-│   ├── api/              # API endpoints
-│   ├── data/             # Xử lý dữ liệu và RSS
-│   ├── rag/              # Hệ thống RAG
-│   └── settings/         # Cấu hình hệ thống
-├── templates/            # Giao diện web (Jinja2)
-├── statics/              # Tài nguyên tĩnh (CSS, JS, images)
-├── stored/               # Lưu trữ vector database
-├── db/                   # Cơ sở dữ liệu SQLite
-└── requirements.txt      # Các thư viện phụ thuộc
+
+## 🧩 Kiến trúc (theo code)
+
+```text
+Browser
+  |  GET /news/  -> đọc SQLite
+  |  POST /news/fetch
+  |     -> RSS VnExpress -> parse bài
+  |     -> upsert SQLite (database.db)
+  |     -> add vào VectorStore (Qdrant/Chroma)
+  |
+  |  POST /rag/ask hoặc /rag/ask_json
+        -> Retriever(VectorStore) -> Context -> LLM -> Answer
 ```
-
-## 🚀 Tính năng chính
-
-- **Thu thập tin tức tự động**: Lấy tin tức mới nhất từ các nguồn RSS
-- **Hỏi đáp thông minh**: Trả lời câu hỏi dựa trên nội dung tin tức
-- **Giao diện web thân thiện**: Dễ sử dụng với các tính năng trực quan
-- **Hệ thống RAG**: Đảm bảo độ chính xác cao trong câu trả lời
-- **Hỗ trợ tiếng Việt**: Hoạt động tốt với ngôn ngữ tiếng Việt
 
 ## 📦 Yêu cầu hệ thống
 
-- Python 3.8+
-- Pip (quản lý gói)
-- Ollama (cho mô hình ngôn ngữ cục bộ) hoặc API key cho các dịch vụ đám mây
+- Python 3.10+ (khuyến nghị)
+- Một LLM provider:
+  - **DeepSeek Cloud** (mặc định theo code) hoặc
+  - OpenAI / Google Gemini / Ollama (có sẵn connector trong `src/rag/llm.py`)
+- **Qdrant** (mặc định theo code, chạy local qua Docker) *hoặc* chuyển sang Chroma local
 
-## ⚙️ Cài đặt
+## ⚙️ Cài đặt & chạy
 
-1. **Clone repository**:
-   ```bash
-   git clone <repository-url>
-   cd vietnamese_new_rag_system
-   ```
+1) Tạo env + cài dependencies
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
 
-2. **Tạo môi trường ảo**:
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate  # Trên Windows: .venv\Scripts\activate
-   ```
+2) (Khuyến nghị) chạy Qdrant local
+```bash
+docker run -p 6333:6333 -p 6334:6334 qdrant/qdrant
+```
 
-3. **Cài đặt các thư viện cần thiết**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+3) Tạo `.env` ở thư mục gốc (tối thiểu)
+```env
+# DeepSeek (mặc định theo src/rag/__init__.py)
+DEEPSEEK_API_KEY=your_deepseek_api_key
 
-4. **Cấu hình môi trường**:
-   Tạo file `.env` trong thư mục gốc với các thông tin cần thiết:
-   ```env
-   # Nếu sử dụng Ollama
-   OLLAMA_BASE_URL=http://localhost:11434
-   
-   # Nếu sử dụng Google Gemini
-   GOOGLE_API_KEY=your_google_api_key
-   
-   # Nếu sử dụng OpenAI
-   OPENAI_API_KEY=your_openai_api_key
-   ```
+# Qdrant (mặc định localhost:6333)
+QDRANT_HOST=localhost
+QDRANT_PORT=6333
 
-5. **Chạy ứng dụng**:
-   ```bash
-   python src/main.py
-   ```
+# (tuỳ chọn) nếu bạn đổi LLM provider
+OPENAI_API_KEY=
+GOOGLE_API_KEY=
+```
 
-6. **Truy cập ứng dụng**:
-   Mở trình duyệt và truy cập `http://localhost:8000`
+4) Chạy server
+```bash
+python src/main.py
+```
 
-## 📖 Hướng dẫn sử dụng
+5) Truy cập
+- Web: http://localhost:8000
+- News: http://localhost:8000/news/
+- Ask: http://localhost:8000/rag/
+- Gradio chat: http://localhost:8000/gradio_chatbot_url
 
-1. **Thu thập tin tức**:
-   - Truy cập trang "Tin tức" (`/news`)
-   - Nhấn nút "Fetch RSS Mới" để thu thập tin tức mới nhất
+## 🧠 Công nghệ chính
 
-2. **Hỏi đáp**:
-   - Truy cập trang "Hỏi Tin tức" (`/rag`)
-   - Nhập câu hỏi của bạn vào ô nhập liệu
-   - Nhấn "Ask" để nhận câu trả lời dựa trên tin tức đã thu thập
+- FastAPI + Jinja2 templates
+- SQLite + SQLModel (`database.db` ở thư mục gốc)
+- LangChain (retrieval chain) + sentence-transformers embeddings (mặc định)
+- Vector store: **Qdrant** (mặc định) / Chroma (có sẵn)
+- Gradio ChatInterface (mount trong FastAPI)
 
-## 🧠 Công nghệ sử dụng
-
-- **Backend**: FastAPI
-- **Frontend**: Jinja2 Templates, HTML, CSS
-- **Cơ sở dữ liệu**: SQLite với SQLModel
-- **Xử lý ngôn ngữ**: Langchain
-- **Vector Database**: FAISS
-- **Mô hình ngôn ngữ**: 
-  - Ollama (local) - deepseek-r1
-  - Google Gemini
-  - OpenAI
-- **Xử lý văn bản**: sentence-transformers
-
-## 📁 Cấu trúc thư mục
+## 📁 Cấu trúc thư mục (rút gọn)
 
 ```
 src/
-├── api/
-│   ├── app.py          # Ứng dụng FastAPI chính
-│   └── routes/
-│       ├── news.py     # Route xử lý tin tức
-│       └── rag.py      # Route xử lý hỏi đáp
-├── data/
-│   ├── database.py     # Mô hình dữ liệu
-│   ├── rss.py          # Xử lý RSS feeds
-│   └── sqldb.py        # Kết nối cơ sở dữ liệu
-├── rag/
-│   ├── documents.py    # Xử lý tài liệu
-│   ├── embedding.py    # Xử lý embedding
-│   ├── llm.py          # Kết nối LLM
-│   ├── qa.py           # Xử lý hỏi đáp
-│   └── vectorstore.py  # Vector database
-└── settings/
-    └── settings.py     # Cấu hình hệ thống
+  api/                # FastAPI app + routes
+  data/               # RSS + SQLite + vectorstore wrapper
+  rag/                # Embedding + LLM + RAG chain (+ agent scaffold)
+  settings/           # settings.py
+templates/            # Jinja2 UI
+statics/              # CSS
+stored/               # persist cho Chroma (nếu dùng local)
+database.db           # SQLite database (tạo khi chạy)
 ```
 
-## 🛠️ Tùy chỉnh
+## 🛠️ Tuỳ chỉnh nhanh
 
-Bạn có thể tùy chỉnh các thông số trong `src/settings/settings.py`:
-- `EMBEDDING_MODEL`: Mô hình embedding sử dụng
-- `LLM_MODEL`: Mô hình ngôn ngữ sử dụng
-- `CHUNK_SIZE`: Kích thước đoạn văn bản chia nhỏ
-- `CHUNK_OVERLAPPED`: Độ chồng giữa các đoạn văn bản
+- Embedding model, chunking: `src/settings/settings.py`
+- Đổi vector store: `src/rag/__init__.py` (mặc định đang dùng `VectorStore.QDRANT`)
+- Đổi LLM provider: `src/rag/__init__.py` / `src/rag/llm.py`
 
-## 🙏 Lời cảm ơn
+## 📌 Ghi chú
 
-- Cảm ơn các nguồn RSS đã cung cấp dữ liệu tin tức
-- Cảm ơn cộng đồng open-source đã cung cấp các thư viện hỗ trợ
+- `use_agent=true` trong `/rag/ask_json` hiện chưa hoàn thiện (agent nằm trong `src/rag/agent/`).
 
-## REFERENCE
+## Reference
+
 https://medium.com/@codeawake/ai-chatbot-frontend-1823b9c78521

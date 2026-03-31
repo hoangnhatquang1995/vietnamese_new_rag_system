@@ -11,13 +11,14 @@ from .chatbots.chatbot import build_rag_chain
 
 db = vectorstore.VectorStoreManager(
     name = "vietnamese_news",
+    type = vectorstore.VectorStore.QDRANT
 )
 embedding   = get_embedding_provider(EmbeddingProvider.HUGGING_FACE,EMBEDDING_MODEL)
 db.build(
     embedder=embedding,
 )
 
-llm         = get_llm(LLM.Local.OLLAMA,LLM_MODEL)
+llm         = get_llm(LLM.Cloud.DEEPSEEK,LLM_MODEL)
 rag_chain   = build_rag_chain(llm,retriever = db.retriver())
 
 

@@ -31,7 +31,7 @@ prompt = ChatPromptTemplate.from_messages([
 
 
 def build_rag_chain(llm,retriever):
-    print(f"llm = {llm} retriever = {retriever}")
+    print(f"[build_rag_chain] llm = {llm} retriever = {retriever}")
     question_answer_chain = create_stuff_documents_chain(
         llm, 
         prompt

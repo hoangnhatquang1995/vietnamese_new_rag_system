@@ -1,6 +1,6 @@
 from langchain_community.embeddings import OpenAIEmbeddings
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
-from langchain_classic.embeddings import OllamaEmbeddings
+from langchain_ollama import OllamaEmbeddings
 
 from enum import Enum
 import os
@@ -17,3 +17,10 @@ def get_embedding_provider(provider : EmbeddingProvider,model_id : str):
     elif provider == EmbeddingProvider.OLLAMA:
         return OllamaEmbeddings(model=model_id)
     return None
+
+def get_embedding_dimension(provider : EmbeddingProvider, model_id : str) -> int:
+    embedder = get_embedding_provider(provider, model_id)
+    if embedder is not None:
+        return len(embedder.embed_query("test"))
+    else:
+        raise ValueError(f"Unsupported embedding provider: {provider}")

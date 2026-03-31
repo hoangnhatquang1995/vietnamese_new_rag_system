@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 import os
 
-from langchain_classic.chat_models.ollama import ChatOllama
+from langchain_ollama import ChatOllama
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_google_genai.chat_models import ChatGoogleGenerativeAIError
 from langchain_openai.chat_models import ChatOpenAI

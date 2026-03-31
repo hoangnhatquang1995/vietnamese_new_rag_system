@@ -1,17 +1,15 @@
 from __future__ import annotations
 
-from typing import Optional, List, Literal, Any, cast
+from typing import Optional, List, Any
 import os
 
-from langchain_core.vectorstores import VectorStoreRetriever
 from langchain_core.documents import Document
-from langchain_community.vectorstores import FAISS
-from langchain_community.docstore import InMemoryDocstore
 from langchain_chroma import Chroma
+from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
-from qdrant_client.http import models as rest
-from . import documents
+from qdrant_client.http import models
 
+from rag.embedding import get_embedding_dimension
 import enum
 import faiss
 import hashlib
@@ -24,21 +22,12 @@ class VectorStore(enum.Enum):
     QDRANT = "qdrant"
 
 
-def document_id(doc : Document) -> str:
-    content = doc.page_content.strip()
-    meta = doc.metadata or {}
-    meta_part = "|".join(
-        str(meta.get(k, ""))
-        for k in ("source", "title", "published_time", "news")
-    )
-    raw = f"{meta_part}\n{content}"
-    return hashlib.md5(raw.encode("utf-8")).hexdigest()
-
 class VectorStoreManager:
     embedder: Any = None
+    name = "vietnamese_news"
     persist_path: str = VECTORESTORE_PATH
-    vectorstore: Optional[Chroma] = None
-    vectorstore_type: VectorStore = VectorStore.CHROMA
+    vectorstore: Optional[Chroma | QdrantVectorStore] = None
+    vectorstore_type: VectorStore = VectorStore.QDRANT
 
     @staticmethod
     def document_id(doc : Document) -> str:
@@ -55,6 +44,7 @@ class VectorStoreManager:
     def dict_id(dict: dict) -> str:
         content = str(dict)
         return hashlib.md5(content.encode("utf-8")).hexdigest()
+    
     @staticmethod
     def string_id(string: str) -> str:
         return hashlib.md5(string.encode("utf-8")).hexdigest()
@@ -88,7 +78,6 @@ class VectorStoreManager:
         self.name = name
         self.vectorstore_type = type
 
-
     def build(self, embedder=None, documents: Optional[List[Document]] = None):
         if embedder != None :
             self.embedder = embedder
@@ -97,11 +86,30 @@ class VectorStoreManager:
         if self.embedder is None:
             raise ValueError("[!Warning] Embedder chưa được cấu hình")
         
-        self.vectorstore = Chroma(
-            embedding_function=self.embedder,
-            persist_directory=self.persist_path,
-            collection_name=self.name
-        )
+        if self.vectorstore_type == VectorStore.CHROMA:
+            self.vectorstore = Chroma(
+                embedding_function=self.embedder,
+                persist_directory=self.persist_path,
+                collection_name=self.name
+            )
+        elif self.vectorstore_type == VectorStore.QDRANT:
+            qdrant_client = QdrantClient(
+                url=f"http://{os.getenv('QDRANT_HOST', 'localhost')}:{os.getenv('QDRANT_PORT', 6333)}"
+            )
+            if not qdrant_client.collection_exists(self.name):
+                qdrant_client.create_collection(
+                    collection_name=self.name,
+                    vectors_config=models.VectorParams(
+                        size= get_embedding_dimension(self.embedder.provider, self.embedder.model_name),
+                        distance=models.Distance.COSINE
+                    )
+                )
+                
+            self.vectorstore = QdrantVectorStore(
+                client=qdrant_client,
+                collection_name=self.name,
+                embedding=self.embedder
+            )
 
         if documents:
             self.add(documents)
@@ -112,21 +120,46 @@ class VectorStoreManager:
     def save(self) -> None:
         if self.vectorstore is None:
             raise ValueError("[ERROR] self.vectorstore = NONE")
-
-        os.makedirs(self.persist_path, exist_ok=True)
-        persist_fn = getattr(self.vectorstore, "persist", None)
-        if callable(persist_fn):
-            persist_fn()
+        if self.embedder is None:
+            raise ValueError("[!Warning] Embedder chưa được cấu hình")
+        
+        if self.vectorstore_type == VectorStore.QDRANT:
+            # Qdrant tự động lưu trữ, không cần gọi persist
+            return
+        elif self.vectorstore_type == VectorStore.CHROMA:
+            os.makedirs(self.persist_path, exist_ok=True)
+            persist_fn = getattr(self.vectorstore, "persist", None)
+            if callable(persist_fn):
+                persist_fn()
 
     def load(self):
         if self.embedder is None:
             raise ValueError("[!Warning] Embedder chưa được cấu hình")
         os.makedirs(self.persist_path, exist_ok=True)
-        self.vectorstore = Chroma(
-            embedding_function=self.embedder,
-            persist_directory=self.persist_path,
-            collection_name="vietnamese_news",
-        )
+        if self.vectorstore_type == VectorStore.CHROMA:
+            self.vectorstore = Chroma(
+                embedding_function=self.embedder,
+                persist_directory=self.persist_path,
+                collection_name=self.name,
+            )
+        elif self.vectorstore_type == VectorStore.QDRANT:
+            qdrant_client = QdrantClient(
+                url=f"http://{os.getenv('QDRANT_HOST', 'localhost')}:{os.getenv('QDRANT_PORT', 6333)}"
+            )
+            if not qdrant_client.collection_exists(self.name):
+                qdrant_client.create_collection(
+                    collection_name=self.name,
+                    vectors_config=models.VectorParams(
+                        size=get_embedding_dimension(self.embedder.provider, self.embedder.model_name),
+                        distance=models.Distance.COSINE
+                    )
+                )
+                
+            self.vectorstore = QdrantVectorStore(
+                client=qdrant_client,
+                collection_name=self.name,
+                embedding=self.embedder
+            )
 
     def add(self, data: Any):
         if self.vectorstore is None:
@@ -159,7 +192,7 @@ class VectorStoreManager:
         else:
             raise TypeError(f"Không hỗ trợ kiểu dữ liệu: {type(data)!r}")
 
-        if docs:
+        if docs:                
             self.vectorstore.add_documents(docs, ids=ids)
         self.save()
 

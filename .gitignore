@@ -1,4 +1,7 @@
 .venv
+.env
+scrapping/vnexpress_output/
+scrapping/vnexpress_output_bk/
 src/__pycache__
 src/data/__pycache__
 src/settings/__pycache__
@@ -11,3 +14,4 @@ src/api/routes/__pycache__
 rss_scrap.txt
 docs/
 *.pyc
+

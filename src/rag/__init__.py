@@ -29,4 +29,5 @@ def chat(message : str , history : List[tuple] = []) :
     print("Chating")
     global rag_chain
     answer = rag_chain.invoke({"input": message})
+    print(f"Answer: {answer}")
     return answer["answer"]
